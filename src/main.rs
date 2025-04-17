@@ -2,6 +2,7 @@ mod server;
 mod store;
 mod connection;
 mod command;
+mod resp;
 
 use store::Store;
 
