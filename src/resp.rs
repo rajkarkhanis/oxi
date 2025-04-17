@@ -1,3 +1,4 @@
+#[derive(Debug, PartialEq)]
 pub enum Command {
     Get(String),
     Set(String, String),
@@ -19,4 +20,37 @@ pub fn parse(input: &str) -> Command {
     }
 
     Command::Unknown(input.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_get() {
+        let input = "*2\r\n$3\r\nGET\r\n$3\r\nfoo\r\n";
+        let result = parse(input);
+        assert_eq!(result, Command::Get("foo".to_string()));
+    }
+
+    #[test]
+    fn test_parse_invalid_get() {
+        let input = "*1\r\n$3\r\nGET\r\n";
+        let result = parse(input);
+        assert_eq!(result, Command::Unknown(input.to_string()));
+    }
+
+    #[test]
+    fn test_valid_set() {
+        let input = "*3\r\n$3\r\nSET\r\n$3\r\nfoo\r\n$3\r\nbar\r\n";
+        let result = parse(input);
+        assert_eq!(result, Command::Set("foo".to_string(), "bar".to_string()));
+    }
+
+    #[test]
+    fn test_invalid_set_missing_value() {
+        let input = "*2\r\n$3\r\nSET\r\n$3\r\nfoo\r\n";
+        let result = parse(input);
+        assert_eq!(result, Command::Unknown(input.to_string()));
+    }
 }

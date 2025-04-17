@@ -23,3 +23,26 @@ impl Store {
         db.insert(key, value);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_set_and_get() {
+        let store = Store::new();
+
+        store.set("foo".to_string(), "bar".to_string());
+        let value = store.get("foo");
+
+        assert_eq!(value, Some("bar".to_string()));
+    }
+
+    #[test]
+    fn test_get_missing_key() {
+        let store = Store::new();
+
+        let value = store.get("nonexistent");
+        assert_eq!(value, None);
+    }
+}
