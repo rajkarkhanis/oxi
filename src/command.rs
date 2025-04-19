@@ -4,7 +4,7 @@ use crate::resp::{self, Command};
 pub fn process_command(input: &str, store: &Store) -> String {
     let command = resp::parse(input);
 
-    match command {
+    match &command {
         Command::Set(key, value) => {
             store.set(key, value);
             return "+OK\r\n".to_string();
@@ -41,7 +41,7 @@ mod tests {
     #[test]
     fn test_get() {
         let store = Store::new();
-        store.set("foo".into(), "bar".into());
+        store.set(&"foo".to_string(), &"bar".to_string());
 
         let get_result = process_command("*2\r\n$3\r\nGET\r\n$3\r\nfoo\r\n", &store);
         assert_eq!(get_result, "$3\r\nbar\r\n");
@@ -58,9 +58,9 @@ mod tests {
     #[test]
     fn test_del_existing_and_missing_keys() {
         let store = Store::new();
-        store.set("foo".into(), "bar".into());
-        store.set("baz".into(), "qux".into());
-        store.set("corge".into(), "grault".into());
+        store.set(&"foo".to_string(), &"bar".to_string());
+        store.set(&"baz".to_string(), &"qux".to_string());
+        store.set(&"corge".to_string(), &"grault".to_string());
 
         let del_some = process_command("*3\r\n$3\r\nDEL\r\n$3\r\nfoo\r\n$3\r\nbar\r\n", &store);
         assert_eq!(del_some, ":1\r\n");

@@ -18,17 +18,17 @@ impl Store {
         db.get(key).cloned()
     }
 
-    pub fn set(&self, key: String, value: String) {
+    pub fn set(&self, key: &String, value: &String) {
         let mut db = self.data.lock().unwrap();
-        db.insert(key, value);
+        db.insert(key.to_string(), value.to_string());
     }
 
-    pub fn del(&self, keys: Vec<String>) -> usize {
+    pub fn del(&self, keys: &Vec<String>) -> usize {
         let mut db = self.data.lock().unwrap();
         let mut count = 0;
 
         for key in keys {
-            if db.remove(&key).is_some() {
+            if db.remove(key.as_str()).is_some() {
                 count += 1;
             }
         }
@@ -45,7 +45,7 @@ mod tests {
     fn test_set_and_get() {
         let store = Store::new();
 
-        store.set("foo".to_string(), "bar".to_string());
+        store.set(&"foo".to_string(), &"bar".to_string());
         let value = store.get("foo");
 
         assert_eq!(value, Some("bar".to_string()));
