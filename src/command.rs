@@ -1,5 +1,6 @@
 use crate::store::Store;
 use crate::resp::{self, Command};
+use crate::aof;
 
 pub fn process_command(input: &str, store: &Store) -> String {
     let command = resp::parse(input);
@@ -7,6 +8,8 @@ pub fn process_command(input: &str, store: &Store) -> String {
     match &command {
         Command::Set(key, value) => {
             store.set(key, value);
+            aof::append(&command)
+                .unwrap_or_else(|e| eprintln!("AOF Append failed: {}", e));
             return "+OK\r\n".to_string();
         },
 
@@ -19,6 +22,8 @@ pub fn process_command(input: &str, store: &Store) -> String {
 
         Command::Del(keys) => {
             let deleted = store.del(keys);
+            aof::append(&command)
+                .unwrap_or_else(|e| eprintln!("AOF Append failed: {}", e));
             format!(":{}\r\n", deleted)
         },
 
