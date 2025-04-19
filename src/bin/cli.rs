@@ -39,14 +39,29 @@ async fn main() -> anyhow::Result<()> {
                     parts[2].len(),
                     parts[2]
                 )
-            }
+            },
+
             "GET" if parts.len() == 2 => {
                 format!(
                     "*2\r\n$3\r\nGET\r\n${}\r\n{}\r\n",
                     parts[1].len(),
                     parts[1]
                 )
-            }
+            },
+
+            "DEL" if parts.len() > 1 => {
+                let keys = parts[1..].iter()
+                    .map(|key| format!("${}\r\n{}\r\n", key.len(), key))
+                    .collect::<Vec<String>>()
+                    .join("");
+
+                format!(
+                    "*{}\r\n$3\r\nDEL\r\n{}\r\n",
+                    parts.len() - 1,
+                    keys
+                )
+            },
+
             _ => {
                 println!("Invalid command. Try: SET key value or GET key");
                 continue;

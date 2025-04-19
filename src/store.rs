@@ -22,6 +22,19 @@ impl Store {
         let mut db = self.data.lock().unwrap();
         db.insert(key, value);
     }
+
+    pub fn del(&self, keys: Vec<String>) -> usize {
+        let mut db = self.data.lock().unwrap();
+        let mut count = 0;
+
+        for key in keys {
+            if db.remove(&key).is_some() {
+                count += 1;
+            }
+        }
+
+        count
+    }
 }
 
 #[cfg(test)]
